@@ -8,20 +8,26 @@ import android.content.Context;
 
 import com.example.lac.cvapp.db.dao.AddressDao;
 import com.example.lac.cvapp.db.dao.CvDao;
+import com.example.lac.cvapp.db.dao.ExperienceDao;
+import com.example.lac.cvapp.db.dao.StudyDao;
 import com.example.lac.cvapp.db.entity.Address;
 import com.example.lac.cvapp.db.entity.Cv;
+import com.example.lac.cvapp.db.entity.Experience;
+import com.example.lac.cvapp.db.entity.Study;
 import com.example.lac.cvapp.util.DateRoomConverter;
 
 /**
  * To get an instance of the created database, use the following code:
  * appDB = AppDatabase.getInstance("CurrentActivity".this);
  */
-@Database(entities = {Cv.class, Address.class}, version = 1)
+@Database(version = 1, entities = {Cv.class, Address.class, Experience.class, Study.class})
 @TypeConverters({DateRoomConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract CvDao cvDao();
     public abstract AddressDao addressDao();
+    public abstract ExperienceDao experienceDao();
+    public abstract StudyDao studyDao();
 
     private static AppDatabase appDB;
 

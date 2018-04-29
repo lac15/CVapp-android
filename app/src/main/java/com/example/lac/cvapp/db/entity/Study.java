@@ -11,12 +11,12 @@ import java.util.Date;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
-@Entity(foreignKeys = {
+@Entity(foreignKeys =
         @ForeignKey(entity = Cv.class,
                 parentColumns = "id",
                 childColumns = "cv_id",
-                onDelete = CASCADE)})
-public class Experience implements Serializable {
+                onDelete = CASCADE))
+public class Study implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -24,11 +24,11 @@ public class Experience implements Serializable {
     @ColumnInfo(name = "cv_id")
     private long cvId;
 
-    @ColumnInfo(name = "position")
-    private String position;
+    @ColumnInfo(name = "name")
+    private String name;
 
-    @ColumnInfo(name = "company")
-    private String company;
+    @ColumnInfo(name = "school")
+    private String school;
 
     @ColumnInfo(name = "country")
     private String country;
@@ -42,18 +42,22 @@ public class Experience implements Serializable {
     @ColumnInfo(name = "end_date")
     private Date endDate;
 
-    public Experience() {
+    @ColumnInfo(name = "description")
+    private String description;
+
+    public Study() {
     }
 
     @Ignore
-    public Experience(long cvId, String position, String company, String country, String city, Date startDate, Date endDate) {
+    public Study(long cvId, String name, String school, String country, String city, Date startDate, Date endDate, String description) {
         this.cvId = cvId;
-        this.position = position;
-        this.company = company;
+        this.name = name;
+        this.school = school;
         this.country = country;
         this.city = city;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.description = description;
     }
 
     public long getId() {
@@ -72,20 +76,20 @@ public class Experience implements Serializable {
         this.cvId = cvId;
     }
 
-    public String getPosition() {
-        return position;
+    public String getName() {
+        return name;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getCompany() {
-        return company;
+    public String getSchool() {
+        return school;
     }
 
-    public void setCompany(String company) {
-        this.company = company;
+    public void setSchool(String school) {
+        this.school = school;
     }
 
     public String getCountry() {
@@ -118,5 +122,13 @@ public class Experience implements Serializable {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

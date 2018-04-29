@@ -3,16 +3,19 @@ package com.example.lac.cvapp.db.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.util.Date;
 
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+
 @Entity(foreignKeys = {
         @ForeignKey(entity = Address.class,
                 parentColumns = "id",
                 childColumns = "address_id",
-                onDelete = ForeignKey.CASCADE)})
+                onDelete = CASCADE)})
 public class Cv implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
@@ -60,11 +63,13 @@ public class Cv implements Serializable {
     public Cv() {
     }
 
+    @Ignore
     public Cv(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
+    @Ignore
     public Cv(String firstName, String lastName, long addressId, String phoneNumber,
               String emailAddress, String gender, Date birthDate, String nationality, String native_language) {
         this.firstName = firstName;

@@ -2,6 +2,7 @@ package com.example.lac.cvapp.db.entity;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.io.Serializable;
@@ -33,6 +34,7 @@ public class Address implements Serializable {
     public Address() {
     }
 
+    @Ignore
     public Address(String country, int zipCode, String state, String city, String street, String houseNumber) {
         this.country = country;
         this.zipCode = zipCode;
