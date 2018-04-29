@@ -4,14 +4,14 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 
-import com.example.lac.cvapp.db.entity.Address;
+import com.example.lac.cvapp.db.entity.Experience;
 
 @Dao
-public interface AddressDao {
+public interface ExperienceDao {
 
     @Insert
-    void insert(Address address);
+    void insert(Experience experience);
 
     @Delete
-    void delete(Address address);
+    void delete(Experience experience);
 }

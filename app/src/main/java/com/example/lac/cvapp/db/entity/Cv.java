@@ -42,9 +42,6 @@ public class Cv implements Serializable {
     @ColumnInfo(name = "nationality")
     private String nationality;
 
-//    @ColumnInfo(name = "professional_experience")
-//    private List<ProfessionalExperience> professionalExperiences;
-
 //    @ColumnInfo(name = "studies")
 //    private List<Studies> studies;
 
