@@ -2,25 +2,30 @@ package com.example.lac.cvapp.db.entity;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.util.Date;
 
-@Entity
+@Entity(foreignKeys = {
+        @ForeignKey(entity = Address.class,
+                parentColumns = "id",
+                childColumns = "address_id",
+                onDelete = ForeignKey.CASCADE)})
 public class Cv implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
-    private long uid;
-
+    private long id;
+    
     @ColumnInfo(name = "first_name")
     private String firstName;
 
     @ColumnInfo(name = "last_name")
     private String lastName;
 
-//    @ColumnInfo(name = "address")
-//    private Address address;
+    @ColumnInfo(name = "address_id")
+    private long addressId;
 
     @ColumnInfo(name = "phone_number")
     private String phoneNumber;
@@ -31,11 +36,8 @@ public class Cv implements Serializable {
     @ColumnInfo(name = "gender")
     private String gender;
 
-    /**
-     * This has to be a Date later.
-     */
     @ColumnInfo(name = "birth_date")
-    private String birthDate;
+    private Date birthDate;
 
     @ColumnInfo(name = "nationality")
     private String nationality;
@@ -66,9 +68,11 @@ public class Cv implements Serializable {
         this.lastName = lastName;
     }
 
-    public Cv(String firstName, String lastName, String phoneNumber, String emailAddress, String gender, String birthDate, String nationality, String native_language) {
+    public Cv(String firstName, String lastName, long addressId, String phoneNumber,
+              String emailAddress, String gender, Date birthDate, String nationality, String native_language) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.addressId = addressId;
         this.phoneNumber = phoneNumber;
         this.emailAddress = emailAddress;
         this.gender = gender;
@@ -77,12 +81,12 @@ public class Cv implements Serializable {
         this.native_language = native_language;
     }
 
-    public long getUid() {
-        return uid;
+    public long getId() {
+        return id;
     }
 
-    public void setUid(long uid) {
-        this.uid = uid;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -99,6 +103,14 @@ public class Cv implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public long getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(long addressId) {
+        this.addressId = addressId;
     }
 
     public String getPhoneNumber() {
@@ -125,11 +137,11 @@ public class Cv implements Serializable {
         this.gender = gender;
     }
 
-    public String getBirthDate() {
+    public Date getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(String birthDate) {
+    public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
     }
 

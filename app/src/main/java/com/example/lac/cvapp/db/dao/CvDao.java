@@ -15,7 +15,7 @@ public interface CvDao {
     @Query("SELECT * FROM cv")
     List<Cv> getAll();
 
-    @Query("SELECT * FROM cv WHERE uid IN (:cvIds)")
+    @Query("SELECT * FROM cv WHERE id IN (:cvIds)")
     List<Cv> loadAllByIds(int[] cvIds);
 
     @Query("SELECT * FROM cv WHERE first_name LIKE :first AND "
