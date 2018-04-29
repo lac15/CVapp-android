@@ -33,13 +33,12 @@ proguard/
 captures/
 
 # Intellij
-#.idea/workspace.xml
-#.idea/tasks.xml
-#.idea/gradle.xml
-#.idea/dictionaries
-#.idea/libraries
 *.iml
-.idea/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/dictionaries
+.idea/libraries
 
 # Keystore files
 *.jks

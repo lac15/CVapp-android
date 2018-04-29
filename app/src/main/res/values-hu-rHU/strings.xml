@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Önéletrajz app</string>
+    <string name="text_first_name">Keresztnév</string>
+    <string name="text_last_name">Vezetéknév</string>
+    <string name="hint_first_name">Adjon meg keresztnevet</string>
+    <string name="hint_last_name">Adjon meg vezetéknevet</string>
+    <string name="button_save">Mentés</string>
+</resources>
