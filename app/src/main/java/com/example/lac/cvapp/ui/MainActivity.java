@@ -8,13 +8,13 @@ import android.widget.EditText;
 
 import com.example.lac.cvapp.R;
 import com.example.lac.cvapp.db.AppDatabase;
-import com.example.lac.cvapp.db.entity.Cv;
+import com.example.lac.cvapp.db.entity.CvEntity;
 
 import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity {
     private AppDatabase appDB;
-    private Cv cv;
+    private CvEntity cvEntity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,23 +27,23 @@ public class MainActivity extends AppCompatActivity {
     public void onSave(View view) {
         EditText editText = (EditText) findViewById(R.id.editText);
         EditText editText2 = (EditText) findViewById(R.id.editText2);
-        cv = new Cv(editText.getText().toString(), editText2.getText().toString());
+        cvEntity = new CvEntity(editText.getText().toString(), editText2.getText().toString());
 
-        new DatabaseAsync(MainActivity.this, cv).execute();
+        new DatabaseAsync(MainActivity.this, cvEntity).execute();
     }
 
     private static class DatabaseAsync extends AsyncTask<Void, Void, Boolean> {
         private WeakReference<MainActivity> activityReference;
-        private Cv cv;
+        private CvEntity cvEntity;
 
-        DatabaseAsync(MainActivity context, Cv cv) {
+        DatabaseAsync(MainActivity context, CvEntity cvEntity) {
             activityReference = new WeakReference<>(context);
-            this.cv = cv;
+            this.cvEntity = cvEntity;
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            activityReference.get().appDB.cvDao().insert(cv);
+            activityReference.get().appDB.cvDao().insert(cvEntity);
 
             return true;
         }

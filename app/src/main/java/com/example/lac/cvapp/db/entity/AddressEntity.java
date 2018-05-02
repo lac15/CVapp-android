@@ -8,7 +8,7 @@ import android.arch.persistence.room.PrimaryKey;
 import java.io.Serializable;
 
 @Entity
-public class Address implements Serializable {
+public class AddressEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -31,11 +31,11 @@ public class Address implements Serializable {
     @ColumnInfo(name = "house_number")
     private String houseNumber;
 
-    public Address() {
+    public AddressEntity() {
     }
 
     @Ignore
-    public Address(String country, int zipCode, String state, String city, String street, String houseNumber) {
+    public AddressEntity(String country, int zipCode, String state, String city, String street, String houseNumber) {
         this.country = country;
         this.zipCode = zipCode;
         this.state = state;

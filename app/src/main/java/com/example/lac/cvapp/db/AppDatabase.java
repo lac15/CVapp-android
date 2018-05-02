@@ -10,17 +10,17 @@ import com.example.lac.cvapp.db.dao.AddressDao;
 import com.example.lac.cvapp.db.dao.CvDao;
 import com.example.lac.cvapp.db.dao.ExperienceDao;
 import com.example.lac.cvapp.db.dao.StudyDao;
-import com.example.lac.cvapp.db.entity.Address;
-import com.example.lac.cvapp.db.entity.Cv;
-import com.example.lac.cvapp.db.entity.Experience;
-import com.example.lac.cvapp.db.entity.Study;
+import com.example.lac.cvapp.db.entity.AddressEntity;
+import com.example.lac.cvapp.db.entity.CvEntity;
+import com.example.lac.cvapp.db.entity.ExperienceEntity;
+import com.example.lac.cvapp.db.entity.StudyEntity;
 import com.example.lac.cvapp.util.DateRoomConverter;
 
 /**
  * To get an instance of the created database, use the following code:
  * appDB = AppDatabase.getInstance("CurrentActivity".this);
  */
-@Database(version = 1, entities = {Cv.class, Address.class, Experience.class, Study.class})
+@Database(version = 1, entities = {CvEntity.class, AddressEntity.class, ExperienceEntity.class, StudyEntity.class})
 @TypeConverters({DateRoomConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 

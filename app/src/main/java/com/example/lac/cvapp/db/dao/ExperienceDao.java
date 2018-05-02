@@ -5,7 +5,7 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
-import com.example.lac.cvapp.db.entity.Experience;
+import com.example.lac.cvapp.db.entity.ExperienceEntity;
 
 import java.util.List;
 
@@ -13,11 +13,11 @@ import java.util.List;
 public interface ExperienceDao {
 
     @Insert
-    void insert(Experience experience);
+    void insert(ExperienceEntity experienceEntity);
 
     @Delete
-    void delete(Experience experience);
+    void delete(ExperienceEntity experienceEntity);
 
-    @Query("SELECT * FROM experience WHERE cv_id = :cvId")
-    List<Experience> findExperiencesForCv(final long cvId);
+    @Query("SELECT * FROM ExperienceEntity WHERE cv_id = :cvId")
+    List<ExperienceEntity> findExperiencesForCv(final long cvId);
 }

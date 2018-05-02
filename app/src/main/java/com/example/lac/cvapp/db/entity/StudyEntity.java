@@ -12,11 +12,11 @@ import java.util.Date;
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 @Entity(foreignKeys =
-        @ForeignKey(entity = Cv.class,
+        @ForeignKey(entity = CvEntity.class,
                 parentColumns = "id",
                 childColumns = "cv_id",
                 onDelete = CASCADE))
-public class Study implements Serializable {
+public class StudyEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -45,11 +45,11 @@ public class Study implements Serializable {
     @ColumnInfo(name = "description")
     private String description;
 
-    public Study() {
+    public StudyEntity() {
     }
 
     @Ignore
-    public Study(long cvId, String name, String school, String country, String city, Date startDate, Date endDate, String description) {
+    public StudyEntity(long cvId, String name, String school, String country, String city, Date startDate, Date endDate, String description) {
         this.cvId = cvId;
         this.name = name;
         this.school = school;

@@ -5,7 +5,7 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
-import com.example.lac.cvapp.db.entity.Study;
+import com.example.lac.cvapp.db.entity.StudyEntity;
 
 import java.util.List;
 
@@ -13,11 +13,11 @@ import java.util.List;
 public interface StudyDao {
 
     @Insert
-    void insert(Study study);
+    void insert(StudyEntity studyEntity);
 
     @Delete
-    void delete(Study study);
+    void delete(StudyEntity studyEntity);
 
-    @Query("SELECT * FROM study WHERE cv_id = :cvId")
-    List<Study> findStudiesForCv(final long cvId);
+    @Query("SELECT * FROM StudyEntity WHERE cv_id = :cvId")
+    List<StudyEntity> findStudiesForCv(final long cvId);
 }
