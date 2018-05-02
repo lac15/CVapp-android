@@ -49,15 +49,6 @@ public class CvEntity implements Serializable {
     @ColumnInfo(name = "native_language")
     private String native_language;
 
-//    @ColumnInfo(name = "language")
-//    private List<Language> languages;
-
-//    @ColumnInfo(name = "driving_license")
-//    private List<DrivingLicense> driving_licenses;
-
-//    @ColumnInfo(name = "hobby")
-//    private List<Hobby> hobbies;
-
     public CvEntity() {
     }
 
