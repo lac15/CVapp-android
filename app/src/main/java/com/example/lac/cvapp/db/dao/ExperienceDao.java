@@ -18,6 +18,6 @@ public interface ExperienceDao {
     @Delete
     void delete(ExperienceEntity experienceEntity);
 
-    @Query("SELECT * FROM ExperienceEntity WHERE cv_id = :cvId")
+    @Query("SELECT * FROM experience WHERE cv_id = :cvId")
     List<ExperienceEntity> findExperiencesForCv(final long cvId);
 }

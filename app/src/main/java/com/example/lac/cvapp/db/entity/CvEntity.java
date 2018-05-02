@@ -11,7 +11,8 @@ import java.util.Date;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
-@Entity(foreignKeys = {
+@Entity(tableName = "cv",
+        foreignKeys = {
         @ForeignKey(entity = AddressEntity.class,
                 parentColumns = "id",
                 childColumns = "address_id",

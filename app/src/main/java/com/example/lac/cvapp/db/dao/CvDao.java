@@ -12,13 +12,13 @@ import java.util.List;
 @Dao
 public interface CvDao {
 
-    @Query("SELECT * FROM CvEntity")
+    @Query("SELECT * FROM cv")
     List<CvEntity> getAll();
 
-    @Query("SELECT * FROM CvEntity WHERE id IN (:cvIds)")
+    @Query("SELECT * FROM cv WHERE id IN (:cvIds)")
     List<CvEntity> loadAllByIds(int[] cvIds);
 
-    @Query("SELECT * FROM CvEntity WHERE first_name LIKE :first AND "
+    @Query("SELECT * FROM cv WHERE first_name LIKE :first AND "
             + "last_name LIKE :last LIMIT 1")
     CvEntity findByName(String first, String last);
 

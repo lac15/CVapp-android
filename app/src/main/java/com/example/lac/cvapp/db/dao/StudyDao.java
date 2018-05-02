@@ -18,6 +18,6 @@ public interface StudyDao {
     @Delete
     void delete(StudyEntity studyEntity);
 
-    @Query("SELECT * FROM StudyEntity WHERE cv_id = :cvId")
+    @Query("SELECT * FROM study WHERE cv_id = :cvId")
     List<StudyEntity> findStudiesForCv(final long cvId);
 }
