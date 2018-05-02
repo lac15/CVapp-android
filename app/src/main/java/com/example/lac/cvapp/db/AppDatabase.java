@@ -8,11 +8,13 @@ import android.content.Context;
 
 import com.example.lac.cvapp.db.dao.AddressDao;
 import com.example.lac.cvapp.db.dao.CvDao;
+import com.example.lac.cvapp.db.dao.DrivingLicenseDao;
 import com.example.lac.cvapp.db.dao.ExperienceDao;
 import com.example.lac.cvapp.db.dao.LanguageDao;
 import com.example.lac.cvapp.db.dao.StudyDao;
 import com.example.lac.cvapp.db.entity.AddressEntity;
 import com.example.lac.cvapp.db.entity.CvEntity;
+import com.example.lac.cvapp.db.entity.DrivingLicenseEntity;
 import com.example.lac.cvapp.db.entity.ExperienceEntity;
 import com.example.lac.cvapp.db.entity.LanguageEntity;
 import com.example.lac.cvapp.db.entity.StudyEntity;
@@ -23,7 +25,7 @@ import com.example.lac.cvapp.util.DateRoomConverter;
  * appDB = AppDatabase.getInstance("CurrentActivity".this);
  */
 @Database(version = 1, entities = {CvEntity.class, AddressEntity.class, ExperienceEntity.class,
-        StudyEntity.class, LanguageEntity.class})
+        StudyEntity.class, LanguageEntity.class, DrivingLicenseEntity.class})
 @TypeConverters({DateRoomConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -32,6 +34,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ExperienceDao experienceDao();
     public abstract StudyDao studyDao();
     public abstract LanguageDao languageDao();
+    public abstract DrivingLicenseDao drivingLicenseDao();
 
     private static AppDatabase appDB;
 

@@ -6,18 +6,15 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
-import java.io.Serializable;
-
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
-@Entity(tableName = "language",
+@Entity(tableName = "driving_license",
         foreignKeys = {
-        @ForeignKey(
-                entity = CvEntity.class,
-                parentColumns = "id",
-                childColumns = "cv_id",
-                onDelete = CASCADE)})
-public class LanguageEntity implements Serializable {
+                @ForeignKey(entity = CvEntity.class,
+                        parentColumns = "id",
+                        childColumns = "cv_id",
+                        onDelete = CASCADE)})
+public class DrivingLicenseEntity {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -25,16 +22,16 @@ public class LanguageEntity implements Serializable {
     @ColumnInfo(name = "cv_id")
     private long cvId;
 
-    @ColumnInfo(name = "name")
-    private String name;
+    @ColumnInfo(name = "type")
+    private String type;
 
-    public LanguageEntity() {
+    public DrivingLicenseEntity() {
     }
 
     @Ignore
-    public LanguageEntity(long id, long cvId, String name) {
+    public DrivingLicenseEntity(long cvId, String type) {
         this.cvId = cvId;
-        this.name = name;
+        this.type = type;
     }
 
     public long getId() {
@@ -53,11 +50,11 @@ public class LanguageEntity implements Serializable {
         this.cvId = cvId;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setType(String type) {
+        this.type = type;
     }
 }
