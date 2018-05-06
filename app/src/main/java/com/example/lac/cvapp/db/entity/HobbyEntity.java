@@ -31,8 +31,7 @@ public class HobbyEntity implements Serializable {
     }
 
     @Ignore
-    public HobbyEntity(long cvId, String name) {
-        this.cvId = cvId;
+    public HobbyEntity(String name) {
         this.name = name;
     }
 

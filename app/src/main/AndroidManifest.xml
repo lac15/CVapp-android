@@ -32,6 +32,10 @@
             android:name=".ui.AddLanguageActivity"
             android:label="@string/label_add_language"
             />
+        <activity
+            android:name=".ui.AddHobbyActivity"
+            android:label="@string/label_add_hobby"
+            />
     </application>
 
 </manifest>

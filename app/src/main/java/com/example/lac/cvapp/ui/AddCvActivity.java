@@ -18,11 +18,13 @@ import android.widget.LinearLayout;
 import com.example.lac.cvapp.R;
 import com.example.lac.cvapp.db.AppDatabase;
 import com.example.lac.cvapp.db.adapter.DrivingLicenseListAdapter;
+import com.example.lac.cvapp.db.adapter.HobbyListAdapter;
 import com.example.lac.cvapp.db.adapter.LanguageListAdapter;
 import com.example.lac.cvapp.db.adapter.StudyListAdapter;
 import com.example.lac.cvapp.db.entity.AddressEntity;
 import com.example.lac.cvapp.db.entity.CvEntity;
 import com.example.lac.cvapp.db.entity.DrivingLicenseEntity;
+import com.example.lac.cvapp.db.entity.HobbyEntity;
 import com.example.lac.cvapp.db.entity.LanguageEntity;
 import com.example.lac.cvapp.db.entity.StudyEntity;
 import com.example.lac.cvapp.util.DateRoomConverter;
@@ -39,19 +41,23 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class AddCvActivity extends AppCompatActivity implements StudyListAdapter.OnStudyListItemClick,
-        DrivingLicenseListAdapter.OnDrivingLicenseListItemClick, LanguageListAdapter.OnLanguageListItemClick {
+        DrivingLicenseListAdapter.OnDrivingLicenseListItemClick, LanguageListAdapter.OnLanguageListItemClick,
+        HobbyListAdapter.OnHobbyListItemClick{
 
     private AppDatabase appDatabase;
 
     private RecyclerView recyclerView;
-    private RecyclerView recyclerDrivingLicenseView;
-    private RecyclerView recyclerLanguageView;
     private StudyListAdapter studyListAdapter;
-    private DrivingLicenseListAdapter drivingLicenseListAdapter;
-    private LanguageListAdapter languageListAdapter;
     private List<StudyEntity> studies;
+    private RecyclerView recyclerDrivingLicenseView;
+    private DrivingLicenseListAdapter drivingLicenseListAdapter;
     private List<DrivingLicenseEntity> drivingLicenses;
+    private RecyclerView recyclerLanguageView;
+    private LanguageListAdapter languageListAdapter;
     private List<LanguageEntity> languages;
+    private RecyclerView recyclerHobbyView;
+    private HobbyListAdapter hobbyListAdapter;
+    private List<HobbyEntity> hobbies;
 
     private CvEntity cvEntity;
     private AddressEntity addressEntity;
@@ -164,7 +170,8 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
                             etPhoneNumber.getText().toString(), etEmailAddress.getText().toString(),
                             etGender.getText().toString(), birthDate,
                             etNationality.getText().toString(), etNativeLanguage.getText().toString());
-                    new InsertTask(AddCvActivity.this, cvEntity, addressEntity, studies, drivingLicenses, languages).execute();
+                    new InsertTask(AddCvActivity.this, cvEntity, addressEntity, studies,
+                            drivingLicenses, languages, hobbies).execute();
                 }
             }
         });
@@ -183,21 +190,32 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         ImageButton ibAddLanguage = (ImageButton) findViewById(R.id.imageButtonLanguage);
         ibAddLanguage.setOnClickListener(languageListener);
 
+        ImageButton ibAddHobby = (ImageButton) findViewById(R.id.imageButtonHobby);
+        ibAddHobby.setOnClickListener(hobbyListener);
+
         recyclerView = findViewById(R.id.rv_study);
-        recyclerDrivingLicenseView = findViewById(R.id.rv_driving_license);
-        recyclerLanguageView = findViewById(R.id.rv_language);
         recyclerView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
-        recyclerDrivingLicenseView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
-        recyclerLanguageView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
         studies = new ArrayList<>();
-        drivingLicenses = new ArrayList<>();
-        languages = new ArrayList<>();
         studyListAdapter = new StudyListAdapter(studies,AddCvActivity.this);
-        drivingLicenseListAdapter = new DrivingLicenseListAdapter(drivingLicenses,AddCvActivity.this);
-        languageListAdapter = new LanguageListAdapter(languages,AddCvActivity.this);
         recyclerView.setAdapter(studyListAdapter);
+
+        recyclerDrivingLicenseView = findViewById(R.id.rv_driving_license);
+        recyclerDrivingLicenseView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
+        drivingLicenses = new ArrayList<>();
+        drivingLicenseListAdapter = new DrivingLicenseListAdapter(drivingLicenses,AddCvActivity.this);
         recyclerDrivingLicenseView.setAdapter(drivingLicenseListAdapter);
+
+        recyclerLanguageView = findViewById(R.id.rv_language);
+        recyclerLanguageView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
+        languages = new ArrayList<>();
+        languageListAdapter = new LanguageListAdapter(languages,AddCvActivity.this);
         recyclerLanguageView.setAdapter(languageListAdapter);
+
+        recyclerHobbyView = findViewById(R.id.rv_hobby);
+        recyclerHobbyView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
+        hobbies = new ArrayList<>();
+        hobbyListAdapter = new HobbyListAdapter(hobbies,AddCvActivity.this);
+        recyclerHobbyView.setAdapter(hobbyListAdapter);
     }
 
     private void displayList(){
@@ -205,10 +223,12 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             new RetrieveTask(this, cvEntity.getId()).execute();
             new RetrieveDrivingLicenseTask(this, cvEntity.getId()).execute();
             new RetrieveLanguageTask(this, cvEntity.getId()).execute();
+            new RetrieveHobbyTask(this, cvEntity.getId()).execute();
         } else {
             new RetrieveTask(this).execute();
             new RetrieveDrivingLicenseTask(this).execute();
             new RetrieveLanguageTask(this).execute();
+            new RetrieveHobbyTask(this).execute();
         }
     }
 
@@ -311,6 +331,39 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         }
     }
 
+    private static class RetrieveHobbyTask extends AsyncTask<Void,Void,List<HobbyEntity>>{
+
+        private WeakReference<AddCvActivity> activityReference;
+        private long cvId;
+
+        RetrieveHobbyTask(AddCvActivity context, long cvId) {
+            activityReference = new WeakReference<>(context);
+            this.cvId = cvId;
+        }
+
+        RetrieveHobbyTask(AddCvActivity context) {
+            activityReference = new WeakReference<>(context);
+            cvId = -1;
+        }
+
+        @Override
+        protected List<HobbyEntity> doInBackground(Void... voids) {
+            if (activityReference.get() != null && cvId != -1)
+                return activityReference.get().appDatabase.hobbyDao().findHobbiesForCv(cvId);
+            else
+                return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<HobbyEntity> hobbies) {
+            if (hobbies != null && hobbies.size() > 0 ){
+                activityReference.get().hobbies.clear();
+                activityReference.get().hobbies.addAll(hobbies);
+                activityReference.get().hobbyListAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
     private void setResult(CvEntity cv, int flag){
         setResult(flag,new Intent().putExtra("cv", cv));
         finish();
@@ -403,6 +456,35 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
     }
 
+    @Override
+    public void onHobbyClick(final int pos) {
+        new AlertDialog.Builder(AddCvActivity.this)
+                .setTitle("Select Options")
+                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i){
+                            case 0:
+                                AddCvActivity.this.pos = pos;
+                                startActivityForResult(
+                                        new Intent(AddCvActivity.this,
+                                                AddHobbyActivity.class).putExtra("hobby", hobbies.get(pos)),
+                                        400);
+
+                                break;
+                            case 1:
+                                if (hobbies.get(pos).getId() > 0) {
+                                    appDatabase.hobbyDao().delete(hobbies.get(pos));
+                                }
+                                hobbies.remove(pos);
+                                listHobbyVisibility();
+                                break;
+                        }
+                    }
+                }).show();
+
+    }
+
     private static class InsertTask extends AsyncTask<Void, Void, Boolean> {
 
         private WeakReference<AddCvActivity> activityReference;
@@ -411,16 +493,18 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         private List<StudyEntity> studies;
         private List<DrivingLicenseEntity> drivingLicenses;
         private List<LanguageEntity> languages;
+        private List<HobbyEntity> hobbies;
 
         InsertTask(AddCvActivity context, CvEntity cvEntity, AddressEntity addressEntity,
                    List<StudyEntity> studies, List<DrivingLicenseEntity> drivingLicenses,
-                   List<LanguageEntity> languages) {
+                   List<LanguageEntity> languages, List<HobbyEntity> hobbies) {
             activityReference = new WeakReference<>(context);
             this.cvEntity = cvEntity;
             this.addressEntity = addressEntity;
             this.studies = studies;
             this.drivingLicenses = drivingLicenses;
             this.languages = languages;
+            this.hobbies = hobbies;
         }
 
         @Override
@@ -443,6 +527,11 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             for (LanguageEntity languageEntity : languages) {
                 languageEntity.setCvId(j);
                 activityReference.get().appDatabase.languageDao().insert(languageEntity);
+            }
+
+            for (HobbyEntity hobbyEntity : hobbies) {
+                hobbyEntity.setCvId(j);
+                activityReference.get().appDatabase.hobbyDao().insert(hobbyEntity);
             }
 
             Log.e("ID ", "doInBackground: " + j );
@@ -488,6 +577,16 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         }
     };
 
+    private View.OnClickListener hobbyListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            startActivityForResult(
+                    new Intent(AddCvActivity.this,
+                            AddHobbyActivity.class).putExtra("cv", cvEntity),
+                    400);
+        }
+    };
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 100 && resultCode > 0 ){
@@ -514,6 +613,14 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             }
             listLanguageVisibility();
         }
+        if (requestCode == 400 && resultCode > 0 ){
+            if( resultCode == 1){
+                hobbies.add((HobbyEntity) data.getSerializableExtra("hobby"));
+            }else if( resultCode == 2){
+                hobbies.set(pos,(HobbyEntity) data.getSerializableExtra("hobby"));
+            }
+            listHobbyVisibility();
+        }
     }
 
     private void listVisibility(){
@@ -526,6 +633,10 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
     private void listLanguageVisibility(){
         languageListAdapter.notifyDataSetChanged();
+    }
+
+    private void listHobbyVisibility(){
+        hobbyListAdapter.notifyDataSetChanged();
     }
 
     public void onAddressClick(View view) {

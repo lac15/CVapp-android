@@ -13,4 +13,6 @@
     <string name="text_driving_license">Driving licenses</string>
     <string name="label_add_language">Add new language</string>
     <string name="text_language">Languages</string>
+    <string name="label_add_hobby">Add new hobby</string>
+    <string name="text_hobby">Hobbies</string>
 </resources>
