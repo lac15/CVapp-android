@@ -6,6 +6,8 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
+import java.io.Serializable;
+
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 @Entity(tableName = "driving_license",
@@ -14,7 +16,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
                         parentColumns = "id",
                         childColumns = "cv_id",
                         onDelete = CASCADE)})
-public class DrivingLicenseEntity {
+public class DrivingLicenseEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -29,8 +31,7 @@ public class DrivingLicenseEntity {
     }
 
     @Ignore
-    public DrivingLicenseEntity(long cvId, String type) {
-        this.cvId = cvId;
+    public DrivingLicenseEntity(String type) {
         this.type = type;
     }
 

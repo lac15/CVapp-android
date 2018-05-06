@@ -24,6 +24,10 @@
             android:name=".ui.AddStudyActivity"
             android:label="@string/label_add_study"
             />
+        <activity
+            android:name=".ui.AddDrivingLicenseActivity"
+            android:label="@string/label_add_driving_license"
+            />
     </application>
 
 </manifest>

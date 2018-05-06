@@ -17,9 +17,11 @@ import android.widget.LinearLayout;
 
 import com.example.lac.cvapp.R;
 import com.example.lac.cvapp.db.AppDatabase;
+import com.example.lac.cvapp.db.adapter.DrivingLicenseListAdapter;
 import com.example.lac.cvapp.db.adapter.StudyListAdapter;
 import com.example.lac.cvapp.db.entity.AddressEntity;
 import com.example.lac.cvapp.db.entity.CvEntity;
+import com.example.lac.cvapp.db.entity.DrivingLicenseEntity;
 import com.example.lac.cvapp.db.entity.StudyEntity;
 import com.example.lac.cvapp.util.DateRoomConverter;
 
@@ -34,13 +36,17 @@ import java.util.Locale;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class AddCvActivity extends AppCompatActivity implements StudyListAdapter.OnStudyListItemClick{
+public class AddCvActivity extends AppCompatActivity implements StudyListAdapter.OnStudyListItemClick,
+        DrivingLicenseListAdapter.OnDrivingLicenseListItemClick {
 
     private AppDatabase appDatabase;
 
     private RecyclerView recyclerView;
+    private RecyclerView recyclerDrivingLicenseView;
     private StudyListAdapter studyListAdapter;
+    private DrivingLicenseListAdapter drivingLicenseListAdapter;
     private List<StudyEntity> studies;
+    private List<DrivingLicenseEntity> drivingLicenses;
 
     private DateRoomConverter dateRoomConverter;
     private CvEntity cvEntity;
@@ -154,7 +160,7 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
                             etPhoneNumber.getText().toString(), etEmailAddress.getText().toString(),
                             etGender.getText().toString(), birthDate,
                             etNationality.getText().toString(), etNativeLanguage.getText().toString());
-                    new InsertTask(AddCvActivity.this, cvEntity, addressEntity, studies).execute();
+                    new InsertTask(AddCvActivity.this, cvEntity, addressEntity, studies, drivingLicenses).execute();
                 }
             }
         });
@@ -167,18 +173,28 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         ImageButton ibAddStudy = (ImageButton) findViewById(R.id.imageButtonStudy);
         ibAddStudy.setOnClickListener(listener);
 
+        ImageButton ibAddDrivingLicense = (ImageButton) findViewById(R.id.imageButtonDrivingLicense);
+        ibAddDrivingLicense.setOnClickListener(drivingLicenseListener);
+
         recyclerView = findViewById(R.id.rv_study);
+        recyclerDrivingLicenseView = findViewById(R.id.rv_driving_license);
         recyclerView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
+        recyclerDrivingLicenseView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
         studies = new ArrayList<>();
+        drivingLicenses = new ArrayList<>();
         studyListAdapter = new StudyListAdapter(studies,AddCvActivity.this);
+        drivingLicenseListAdapter = new DrivingLicenseListAdapter(drivingLicenses,AddCvActivity.this);
         recyclerView.setAdapter(studyListAdapter);
+        recyclerDrivingLicenseView.setAdapter(drivingLicenseListAdapter);
     }
 
     private void displayList(){
         if (cvEntity != null) {
             new RetrieveTask(this, cvEntity.getId()).execute();
+            new RetrieveDrivingLicenseTask(this, cvEntity.getId()).execute();
         } else {
             new RetrieveTask(this).execute();
+            new RetrieveDrivingLicenseTask(this).execute();
         }
     }
 
@@ -211,6 +227,39 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
                 activityReference.get().studies.clear();
                 activityReference.get().studies.addAll(studies);
                 activityReference.get().studyListAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    private static class RetrieveDrivingLicenseTask extends AsyncTask<Void,Void,List<DrivingLicenseEntity>>{
+
+        private WeakReference<AddCvActivity> activityReference;
+        private long cvId;
+
+        RetrieveDrivingLicenseTask(AddCvActivity context, long cvId) {
+            activityReference = new WeakReference<>(context);
+            this.cvId = cvId;
+        }
+
+        RetrieveDrivingLicenseTask(AddCvActivity context) {
+            activityReference = new WeakReference<>(context);
+            cvId = -1;
+        }
+
+        @Override
+        protected List<DrivingLicenseEntity> doInBackground(Void... voids) {
+            if (activityReference.get() != null && cvId != -1)
+                return activityReference.get().appDatabase.drivingLicenseDao().findDrivingLicensesForCv(cvId);
+            else
+                return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<DrivingLicenseEntity> drivingLicenses) {
+            if (drivingLicenses != null && drivingLicenses.size() > 0 ){
+                activityReference.get().drivingLicenses.clear();
+                activityReference.get().drivingLicenses.addAll(drivingLicenses);
+                activityReference.get().drivingLicenseListAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -249,19 +298,50 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
     }
 
+    @Override
+    public void onDrivingLicenseClick(final int pos) {
+        new AlertDialog.Builder(AddCvActivity.this)
+                .setTitle("Select Options")
+                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i){
+                            case 0:
+                                AddCvActivity.this.pos = pos;
+                                startActivityForResult(
+                                        new Intent(AddCvActivity.this,
+                                                AddDrivingLicenseActivity.class).putExtra("driving_license", drivingLicenses.get(pos)),
+                                        200);
+
+                                break;
+                            case 1:
+                                if (drivingLicenses.get(pos).getId() > 0) {
+                                    appDatabase.drivingLicenseDao().delete(drivingLicenses.get(pos));
+                                }
+                                drivingLicenses.remove(pos);
+                                listDrivingLicenseVisibility();
+                                break;
+                        }
+                    }
+                }).show();
+
+    }
+
     private static class InsertTask extends AsyncTask<Void, Void, Boolean> {
 
         private WeakReference<AddCvActivity> activityReference;
         private CvEntity cvEntity;
         private AddressEntity addressEntity;
         private List<StudyEntity> studies;
+        private List<DrivingLicenseEntity> drivingLicenses;
 
         InsertTask(AddCvActivity context, CvEntity cvEntity, AddressEntity addressEntity,
-                   List<StudyEntity> studies) {
+                   List<StudyEntity> studies, List<DrivingLicenseEntity> drivingLicenses) {
             activityReference = new WeakReference<>(context);
             this.cvEntity = cvEntity;
             this.addressEntity = addressEntity;
             this.studies = studies;
+            this.drivingLicenses = drivingLicenses;
         }
 
         @Override
@@ -274,6 +354,11 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             for (StudyEntity studyEntity : studies) {
                 studyEntity.setCvId(j);
                 activityReference.get().appDatabase.studyDao().insert(studyEntity);
+            }
+
+            for (DrivingLicenseEntity drivingLicenseEntity : drivingLicenses) {
+                drivingLicenseEntity.setCvId(j);
+                activityReference.get().appDatabase.drivingLicenseDao().insert(drivingLicenseEntity);
             }
 
             Log.e("ID ", "doInBackground: " + j );
@@ -299,6 +384,16 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         }
     };
 
+    private View.OnClickListener drivingLicenseListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            startActivityForResult(
+                    new Intent(AddCvActivity.this,
+                            AddDrivingLicenseActivity.class).putExtra("cv", cvEntity),
+                    200);
+        }
+    };
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 100 && resultCode > 0 ){
@@ -309,10 +404,22 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             }
             listVisibility();
         }
+        if (requestCode == 200 && resultCode > 0 ){
+            if( resultCode == 1){
+                drivingLicenses.add((DrivingLicenseEntity) data.getSerializableExtra("driving_license"));
+            }else if( resultCode == 2){
+                drivingLicenses.set(pos,(DrivingLicenseEntity) data.getSerializableExtra("driving_license"));
+            }
+            listDrivingLicenseVisibility();
+        }
     }
 
     private void listVisibility(){
         studyListAdapter.notifyDataSetChanged();
+    }
+
+    private void listDrivingLicenseVisibility(){
+        drivingLicenseListAdapter.notifyDataSetChanged();
     }
 
     public void onAddressClick(View view) {

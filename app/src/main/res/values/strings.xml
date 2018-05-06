@@ -7,6 +7,8 @@
     <string name="button_save">Save</string>
     <string name="label_add_cv">Add new CV</string>
     <string name="text_address">Address</string>
-    <string name="text_study">Study</string>
+    <string name="text_study">Studies</string>
     <string name="label_add_study">Add new study</string>
+    <string name="label_add_driving_license">Add new driving license</string>
+    <string name="text_driving_license">Driving licenses</string>
 </resources>
