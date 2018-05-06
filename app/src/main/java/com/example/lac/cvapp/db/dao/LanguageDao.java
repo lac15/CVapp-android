@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import com.example.lac.cvapp.db.entity.LanguageEntity;
 
@@ -13,7 +14,10 @@ import java.util.List;
 public interface LanguageDao {
 
     @Insert
-    void insert(LanguageEntity languageEntity);
+    long insert(LanguageEntity languageEntity);
+
+    @Update
+    void update(LanguageEntity languageEntity);
 
     @Delete
     void delete(LanguageEntity languageEntity);

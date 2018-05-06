@@ -12,4 +12,6 @@
     <string name="label_add_study">Új iskola hozzáadása</string>
     <string name="label_add_driving_license">Új jogosítvány hozzáadása</string>
     <string name="text_driving_license">Jogosítványok</string>
+    <string name="label_add_language">Új nyelv hozzáadása</string>
+    <string name="text_language">Nyelvek</string>
 </resources>

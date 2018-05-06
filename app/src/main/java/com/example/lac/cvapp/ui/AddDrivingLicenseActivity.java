@@ -103,4 +103,10 @@ public class AddDrivingLicenseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        appDatabase.cleanUp();
+        super.onDestroy();
+    }
+
 }

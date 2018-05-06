@@ -163,4 +163,10 @@ public class AddStudyActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        appDatabase.cleanUp();
+        super.onDestroy();
+    }
+
 }

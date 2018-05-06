@@ -28,6 +28,10 @@
             android:name=".ui.AddDrivingLicenseActivity"
             android:label="@string/label_add_driving_license"
             />
+        <activity
+            android:name=".ui.AddLanguageActivity"
+            android:label="@string/label_add_language"
+            />
     </application>
 
 </manifest>

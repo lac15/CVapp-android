@@ -18,10 +18,12 @@ import android.widget.LinearLayout;
 import com.example.lac.cvapp.R;
 import com.example.lac.cvapp.db.AppDatabase;
 import com.example.lac.cvapp.db.adapter.DrivingLicenseListAdapter;
+import com.example.lac.cvapp.db.adapter.LanguageListAdapter;
 import com.example.lac.cvapp.db.adapter.StudyListAdapter;
 import com.example.lac.cvapp.db.entity.AddressEntity;
 import com.example.lac.cvapp.db.entity.CvEntity;
 import com.example.lac.cvapp.db.entity.DrivingLicenseEntity;
+import com.example.lac.cvapp.db.entity.LanguageEntity;
 import com.example.lac.cvapp.db.entity.StudyEntity;
 import com.example.lac.cvapp.util.DateRoomConverter;
 
@@ -37,18 +39,20 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class AddCvActivity extends AppCompatActivity implements StudyListAdapter.OnStudyListItemClick,
-        DrivingLicenseListAdapter.OnDrivingLicenseListItemClick {
+        DrivingLicenseListAdapter.OnDrivingLicenseListItemClick, LanguageListAdapter.OnLanguageListItemClick {
 
     private AppDatabase appDatabase;
 
     private RecyclerView recyclerView;
     private RecyclerView recyclerDrivingLicenseView;
+    private RecyclerView recyclerLanguageView;
     private StudyListAdapter studyListAdapter;
     private DrivingLicenseListAdapter drivingLicenseListAdapter;
+    private LanguageListAdapter languageListAdapter;
     private List<StudyEntity> studies;
     private List<DrivingLicenseEntity> drivingLicenses;
+    private List<LanguageEntity> languages;
 
-    private DateRoomConverter dateRoomConverter;
     private CvEntity cvEntity;
     private AddressEntity addressEntity;
 
@@ -160,7 +164,7 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
                             etPhoneNumber.getText().toString(), etEmailAddress.getText().toString(),
                             etGender.getText().toString(), birthDate,
                             etNationality.getText().toString(), etNativeLanguage.getText().toString());
-                    new InsertTask(AddCvActivity.this, cvEntity, addressEntity, studies, drivingLicenses).execute();
+                    new InsertTask(AddCvActivity.this, cvEntity, addressEntity, studies, drivingLicenses, languages).execute();
                 }
             }
         });
@@ -176,25 +180,35 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         ImageButton ibAddDrivingLicense = (ImageButton) findViewById(R.id.imageButtonDrivingLicense);
         ibAddDrivingLicense.setOnClickListener(drivingLicenseListener);
 
+        ImageButton ibAddLanguage = (ImageButton) findViewById(R.id.imageButtonLanguage);
+        ibAddLanguage.setOnClickListener(languageListener);
+
         recyclerView = findViewById(R.id.rv_study);
         recyclerDrivingLicenseView = findViewById(R.id.rv_driving_license);
+        recyclerLanguageView = findViewById(R.id.rv_language);
         recyclerView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
         recyclerDrivingLicenseView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
+        recyclerLanguageView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
         studies = new ArrayList<>();
         drivingLicenses = new ArrayList<>();
+        languages = new ArrayList<>();
         studyListAdapter = new StudyListAdapter(studies,AddCvActivity.this);
         drivingLicenseListAdapter = new DrivingLicenseListAdapter(drivingLicenses,AddCvActivity.this);
+        languageListAdapter = new LanguageListAdapter(languages,AddCvActivity.this);
         recyclerView.setAdapter(studyListAdapter);
         recyclerDrivingLicenseView.setAdapter(drivingLicenseListAdapter);
+        recyclerLanguageView.setAdapter(languageListAdapter);
     }
 
     private void displayList(){
         if (cvEntity != null) {
             new RetrieveTask(this, cvEntity.getId()).execute();
             new RetrieveDrivingLicenseTask(this, cvEntity.getId()).execute();
+            new RetrieveLanguageTask(this, cvEntity.getId()).execute();
         } else {
             new RetrieveTask(this).execute();
             new RetrieveDrivingLicenseTask(this).execute();
+            new RetrieveLanguageTask(this).execute();
         }
     }
 
@@ -264,6 +278,39 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         }
     }
 
+    private static class RetrieveLanguageTask extends AsyncTask<Void,Void,List<LanguageEntity>>{
+
+        private WeakReference<AddCvActivity> activityReference;
+        private long cvId;
+
+        RetrieveLanguageTask(AddCvActivity context, long cvId) {
+            activityReference = new WeakReference<>(context);
+            this.cvId = cvId;
+        }
+
+        RetrieveLanguageTask(AddCvActivity context) {
+            activityReference = new WeakReference<>(context);
+            cvId = -1;
+        }
+
+        @Override
+        protected List<LanguageEntity> doInBackground(Void... voids) {
+            if (activityReference.get() != null && cvId != -1)
+                return activityReference.get().appDatabase.languageDao().findLanguagesForCv(cvId);
+            else
+                return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<LanguageEntity> languages) {
+            if (languages != null && languages.size() > 0 ){
+                activityReference.get().languages.clear();
+                activityReference.get().languages.addAll(languages);
+                activityReference.get().languageListAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
     private void setResult(CvEntity cv, int flag){
         setResult(flag,new Intent().putExtra("cv", cv));
         finish();
@@ -327,6 +374,35 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
     }
 
+    @Override
+    public void onLanguageClick(final int pos) {
+        new AlertDialog.Builder(AddCvActivity.this)
+                .setTitle("Select Options")
+                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i){
+                            case 0:
+                                AddCvActivity.this.pos = pos;
+                                startActivityForResult(
+                                        new Intent(AddCvActivity.this,
+                                                AddLanguageActivity.class).putExtra("language", languages.get(pos)),
+                                        300);
+
+                                break;
+                            case 1:
+                                if (languages.get(pos).getId() > 0) {
+                                    appDatabase.languageDao().delete(languages.get(pos));
+                                }
+                                languages.remove(pos);
+                                listLanguageVisibility();
+                                break;
+                        }
+                    }
+                }).show();
+
+    }
+
     private static class InsertTask extends AsyncTask<Void, Void, Boolean> {
 
         private WeakReference<AddCvActivity> activityReference;
@@ -334,14 +410,17 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         private AddressEntity addressEntity;
         private List<StudyEntity> studies;
         private List<DrivingLicenseEntity> drivingLicenses;
+        private List<LanguageEntity> languages;
 
         InsertTask(AddCvActivity context, CvEntity cvEntity, AddressEntity addressEntity,
-                   List<StudyEntity> studies, List<DrivingLicenseEntity> drivingLicenses) {
+                   List<StudyEntity> studies, List<DrivingLicenseEntity> drivingLicenses,
+                   List<LanguageEntity> languages) {
             activityReference = new WeakReference<>(context);
             this.cvEntity = cvEntity;
             this.addressEntity = addressEntity;
             this.studies = studies;
             this.drivingLicenses = drivingLicenses;
+            this.languages = languages;
         }
 
         @Override
@@ -359,6 +438,11 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             for (DrivingLicenseEntity drivingLicenseEntity : drivingLicenses) {
                 drivingLicenseEntity.setCvId(j);
                 activityReference.get().appDatabase.drivingLicenseDao().insert(drivingLicenseEntity);
+            }
+
+            for (LanguageEntity languageEntity : languages) {
+                languageEntity.setCvId(j);
+                activityReference.get().appDatabase.languageDao().insert(languageEntity);
             }
 
             Log.e("ID ", "doInBackground: " + j );
@@ -394,6 +478,16 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         }
     };
 
+    private View.OnClickListener languageListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            startActivityForResult(
+                    new Intent(AddCvActivity.this,
+                            AddLanguageActivity.class).putExtra("cv", cvEntity),
+                    300);
+        }
+    };
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 100 && resultCode > 0 ){
@@ -412,6 +506,14 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             }
             listDrivingLicenseVisibility();
         }
+        if (requestCode == 300 && resultCode > 0 ){
+            if( resultCode == 1){
+                languages.add((LanguageEntity) data.getSerializableExtra("language"));
+            }else if( resultCode == 2){
+                languages.set(pos,(LanguageEntity) data.getSerializableExtra("language"));
+            }
+            listLanguageVisibility();
+        }
     }
 
     private void listVisibility(){
@@ -420,6 +522,10 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
     private void listDrivingLicenseVisibility(){
         drivingLicenseListAdapter.notifyDataSetChanged();
+    }
+
+    private void listLanguageVisibility(){
+        languageListAdapter.notifyDataSetChanged();
     }
 
     public void onAddressClick(View view) {

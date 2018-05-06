@@ -32,8 +32,7 @@ public class LanguageEntity implements Serializable {
     }
 
     @Ignore
-    public LanguageEntity(long id, long cvId, String name) {
-        this.cvId = cvId;
+    public LanguageEntity(String name) {
         this.name = name;
     }
 

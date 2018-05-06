@@ -6,6 +6,8 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
+import java.io.Serializable;
+
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 @Entity(tableName = "hobby",
@@ -14,7 +16,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
                         parentColumns = "id",
                         childColumns = "cv_id",
                         onDelete = CASCADE)})
-public class HobbyEntity {
+public class HobbyEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private long id;

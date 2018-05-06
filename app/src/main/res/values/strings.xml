@@ -11,4 +11,6 @@
     <string name="label_add_study">Add new study</string>
     <string name="label_add_driving_license">Add new driving license</string>
     <string name="text_driving_license">Driving licenses</string>
+    <string name="label_add_language">Add new language</string>
+    <string name="text_language">Languages</string>
 </resources>
