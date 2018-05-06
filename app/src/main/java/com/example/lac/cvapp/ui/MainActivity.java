@@ -1,51 +1,152 @@
 package com.example.lac.cvapp.ui;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.lac.cvapp.R;
 import com.example.lac.cvapp.db.AppDatabase;
+import com.example.lac.cvapp.db.adapter.CvListAdapter;
 import com.example.lac.cvapp.db.entity.CvEntity;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
-    private AppDatabase appDB;
-    private CvEntity cvEntity;
+public class MainActivity extends AppCompatActivity implements CvListAdapter.OnCvListItemClick{
+
+    /*private TextView textViewMsg;*/
+    private AppDatabase appDatabase;
+
+    private RecyclerView recyclerView;
+    private CvListAdapter cvListAdapter;
+    private List<CvEntity> cvs;
+
+    private int pos;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        appDB = AppDatabase.getInstance(MainActivity.this);
+        initializeViews();
+        displayList();
     }
 
-    public void onSave(View view) {
-        EditText editText = (EditText) findViewById(R.id.editText);
-        EditText editText2 = (EditText) findViewById(R.id.editText2);
-        cvEntity = new CvEntity(editText.getText().toString(), editText2.getText().toString());
+    private void initializeViews(){
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        textViewMsg =  (TextView) findViewById(R.id.tv__empty);*/
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(listener);
 
-        new DatabaseAsync(MainActivity.this, cvEntity).execute();
+        recyclerView = findViewById(R.id.rv_cv);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        cvs = new ArrayList<>();
+        cvListAdapter = new CvListAdapter(cvs,MainActivity.this);
+        recyclerView.setAdapter(cvListAdapter);
     }
 
-    private static class DatabaseAsync extends AsyncTask<Void, Void, Boolean> {
+    private void displayList(){
+        appDatabase = AppDatabase.getInstance(MainActivity.this);
+        new RetrieveTask(this).execute();
+    }
+
+    private static class RetrieveTask extends AsyncTask<Void,Void,List<CvEntity>>{
+
         private WeakReference<MainActivity> activityReference;
-        private CvEntity cvEntity;
 
-        DatabaseAsync(MainActivity context, CvEntity cvEntity) {
+        RetrieveTask(MainActivity context) {
             activityReference = new WeakReference<>(context);
-            this.cvEntity = cvEntity;
         }
 
         @Override
-        protected Boolean doInBackground(Void... voids) {
-            activityReference.get().appDB.cvDao().insert(cvEntity);
+        protected List<CvEntity> doInBackground(Void... voids) {
+            if (activityReference.get() != null)
+                return activityReference.get().appDatabase.cvDao().getAll();
+            else
+                return null;
+        }
 
-            return true;
+        @Override
+        protected void onPostExecute(List<CvEntity> cvs) {
+            if (cvs != null && cvs.size() > 0 ){
+                activityReference.get().cvs.clear();
+                activityReference.get().cvs.addAll(cvs);
+
+                //activityReference.get().textViewMsg.setVisibility(View.GONE);
+                activityReference.get().cvListAdapter.notifyDataSetChanged();
+            }
         }
     }
+
+    private View.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            startActivityForResult(new Intent(MainActivity.this, AddCvActivity.class),100);
+        }
+    };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 100 && resultCode > 0 ){
+            if( resultCode == 1){
+                cvs.add((CvEntity) data.getSerializableExtra("cv"));
+            }else if( resultCode == 2){
+                cvs.set(pos,(CvEntity) data.getSerializableExtra("cv"));
+            }
+            listVisibility();
+        }
+    }
+
+    @Override
+    public void onCvClick(final int pos) {
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Select Options")
+                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i){
+                            case 0:
+                                MainActivity.this.pos = pos;
+                                startActivityForResult(
+                                        new Intent(MainActivity.this,
+                                                AddCvActivity.class).putExtra("cv", cvs.get(pos)),
+                                        100);
+                                break;
+                            case 1:
+                                appDatabase.cvDao().delete(cvs.get(pos));
+                                cvs.remove(pos);
+                                listVisibility();
+                                break;
+                        }
+                    }
+                }).show();
+
+    }
+
+    private void listVisibility(){
+        /*int emptyMsgVisibility = View.GONE;
+        if (cvs.size() == 0){ // no item to display
+            if (textViewMsg.getVisibility() == View.GONE)
+                emptyMsgVisibility = View.VISIBLE;
+        }
+        textViewMsg.setVisibility(emptyMsgVisibility);*/
+        cvListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onDestroy() {
+        appDatabase.cleanUp();
+        super.onDestroy();
+    }
+
 }

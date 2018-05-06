@@ -6,4 +6,8 @@
     <string name="hint_first_name">Adjon meg keresztnevet</string>
     <string name="hint_last_name">Adjon meg vezetéknevet</string>
     <string name="button_save">Mentés</string>
+    <string name="label_add_cv">Új önéletrajz hozzáadása</string>
+    <string name="text_address">Cím</string>
+    <string name="text_study">Tanulmányok</string>
+    <string name="label_add_study">Új iskola hozzáadása</string>
 </resources>

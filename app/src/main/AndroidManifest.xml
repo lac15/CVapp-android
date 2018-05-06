@@ -16,6 +16,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.AddCvActivity"
+            android:label="@string/label_add_cv"
+            />
+        <activity
+            android:name=".ui.AddStudyActivity"
+            android:label="@string/label_add_study"
+            />
     </application>
 
 </manifest>

@@ -50,8 +50,7 @@ public class StudyEntity implements Serializable {
     }
 
     @Ignore
-    public StudyEntity(long cvId, String name, String school, String country, String city, Date startDate, Date endDate, String description) {
-        this.cvId = cvId;
+    public StudyEntity(String name, String school, String country, String city, Date startDate, Date endDate, String description) {
         this.name = name;
         this.school = school;
         this.country = country;

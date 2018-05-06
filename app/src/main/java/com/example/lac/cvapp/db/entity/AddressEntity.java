@@ -17,7 +17,7 @@ public class AddressEntity implements Serializable {
     private String country;
 
     @ColumnInfo(name = "zip_code")
-    private int zipCode;
+    private String zipCode;
 
     @ColumnInfo(name = "state")
     private String state;
@@ -35,7 +35,7 @@ public class AddressEntity implements Serializable {
     }
 
     @Ignore
-    public AddressEntity(String country, int zipCode, String state, String city, String street, String houseNumber) {
+    public AddressEntity(String country, String zipCode, String state, String city, String street, String houseNumber) {
         this.country = country;
         this.zipCode = zipCode;
         this.state = state;
@@ -60,11 +60,11 @@ public class AddressEntity implements Serializable {
         this.country = country;
     }
 
-    public int getZipCode() {
+    public String getZipCode() {
         return zipCode;
     }
 
-    public void setZipCode(int zipCode) {
+    public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
 

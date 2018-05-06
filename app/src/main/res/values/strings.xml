@@ -5,4 +5,8 @@
     <string name="hint_first_name">Enter first name</string>
     <string name="hint_last_name">Enter last name</string>
     <string name="button_save">Save</string>
+    <string name="label_add_cv">Add new CV</string>
+    <string name="text_address">Address</string>
+    <string name="text_study">Study</string>
+    <string name="label_add_study">Add new study</string>
 </resources>

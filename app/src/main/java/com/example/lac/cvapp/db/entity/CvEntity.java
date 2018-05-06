@@ -47,7 +47,7 @@ public class CvEntity implements Serializable {
     private String nationality;
 
     @ColumnInfo(name = "native_language")
-    private String native_language;
+    private String nativeLanguage;
 
     public CvEntity() {
     }
@@ -59,17 +59,16 @@ public class CvEntity implements Serializable {
     }
 
     @Ignore
-    public CvEntity(String firstName, String lastName, long addressId, String phoneNumber,
-                    String emailAddress, String gender, Date birthDate, String nationality, String native_language) {
+    public CvEntity(String firstName, String lastName, String phoneNumber, String emailAddress,
+                    String gender, Date birthDate, String nationality, String nativeLanguage) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.addressId = addressId;
         this.phoneNumber = phoneNumber;
         this.emailAddress = emailAddress;
         this.gender = gender;
         this.birthDate = birthDate;
         this.nationality = nationality;
-        this.native_language = native_language;
+        this.nativeLanguage = nativeLanguage;
     }
 
     public long getId() {
@@ -144,11 +143,11 @@ public class CvEntity implements Serializable {
         this.nationality = nationality;
     }
 
-    public String getNative_language() {
-        return native_language;
+    public String getNativeLanguage() {
+        return nativeLanguage;
     }
 
-    public void setNative_language(String native_language) {
-        this.native_language = native_language;
+    public void setNativeLanguage(String nativeLanguage) {
+        this.nativeLanguage = nativeLanguage;
     }
 }

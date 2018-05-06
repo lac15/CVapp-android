@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import com.example.lac.cvapp.db.entity.CvEntity;
 
@@ -23,7 +24,10 @@ public interface CvDao {
     CvEntity findByName(String first, String last);
 
     @Insert
-    void insert(CvEntity cvEntity);
+    long insert(CvEntity cvEntity);
+
+    @Update
+    void update(CvEntity cvEntity);
 
     @Delete
     void delete(CvEntity cvEntity);

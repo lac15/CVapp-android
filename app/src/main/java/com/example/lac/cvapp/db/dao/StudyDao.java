@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import com.example.lac.cvapp.db.entity.StudyEntity;
 
@@ -13,7 +14,10 @@ import java.util.List;
 public interface StudyDao {
 
     @Insert
-    void insert(StudyEntity studyEntity);
+    long insert(StudyEntity studyEntity);
+
+    @Update
+    void update(StudyEntity studyEntity);
 
     @Delete
     void delete(StudyEntity studyEntity);
