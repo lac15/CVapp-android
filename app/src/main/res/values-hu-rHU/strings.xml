@@ -16,4 +16,6 @@
     <string name="text_language">Nyelvek</string>
     <string name="label_add_hobby">Új hobbi hozzáadása</string>
     <string name="text_hobby">Hobbik</string>
+    <string name="label_add_experience">Új tapasztalat hozzáadása</string>
+    <string name="text_experience">Tapasztalatok</string>
 </resources>

@@ -47,8 +47,7 @@ public class ExperienceEntity implements Serializable {
     }
 
     @Ignore
-    public ExperienceEntity(long cvId, String position, String company, String country, String city, Date startDate, Date endDate) {
-        this.cvId = cvId;
+    public ExperienceEntity(String position, String company, String country, String city, Date startDate, Date endDate) {
         this.position = position;
         this.company = company;
         this.country = country;

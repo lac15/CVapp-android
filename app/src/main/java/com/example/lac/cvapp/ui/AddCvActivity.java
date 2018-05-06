@@ -18,12 +18,14 @@ import android.widget.LinearLayout;
 import com.example.lac.cvapp.R;
 import com.example.lac.cvapp.db.AppDatabase;
 import com.example.lac.cvapp.db.adapter.DrivingLicenseListAdapter;
+import com.example.lac.cvapp.db.adapter.ExperienceListAdapter;
 import com.example.lac.cvapp.db.adapter.HobbyListAdapter;
 import com.example.lac.cvapp.db.adapter.LanguageListAdapter;
 import com.example.lac.cvapp.db.adapter.StudyListAdapter;
 import com.example.lac.cvapp.db.entity.AddressEntity;
 import com.example.lac.cvapp.db.entity.CvEntity;
 import com.example.lac.cvapp.db.entity.DrivingLicenseEntity;
+import com.example.lac.cvapp.db.entity.ExperienceEntity;
 import com.example.lac.cvapp.db.entity.HobbyEntity;
 import com.example.lac.cvapp.db.entity.LanguageEntity;
 import com.example.lac.cvapp.db.entity.StudyEntity;
@@ -42,7 +44,7 @@ import static android.view.View.VISIBLE;
 
 public class AddCvActivity extends AppCompatActivity implements StudyListAdapter.OnStudyListItemClick,
         DrivingLicenseListAdapter.OnDrivingLicenseListItemClick, LanguageListAdapter.OnLanguageListItemClick,
-        HobbyListAdapter.OnHobbyListItemClick{
+        HobbyListAdapter.OnHobbyListItemClick, ExperienceListAdapter.OnExperienceListItemClick {
 
     private AppDatabase appDatabase;
 
@@ -58,6 +60,9 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
     private RecyclerView recyclerHobbyView;
     private HobbyListAdapter hobbyListAdapter;
     private List<HobbyEntity> hobbies;
+    private RecyclerView recyclerExperienceView;
+    private ExperienceListAdapter experienceListAdapter;
+    private List<ExperienceEntity> experiences;
 
     private CvEntity cvEntity;
     private AddressEntity addressEntity;
@@ -171,7 +176,7 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
                             etGender.getText().toString(), birthDate,
                             etNationality.getText().toString(), etNativeLanguage.getText().toString());
                     new InsertTask(AddCvActivity.this, cvEntity, addressEntity, studies,
-                            drivingLicenses, languages, hobbies).execute();
+                            drivingLicenses, languages, hobbies, experiences).execute();
                 }
             }
         });
@@ -192,6 +197,9 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
         ImageButton ibAddHobby = (ImageButton) findViewById(R.id.imageButtonHobby);
         ibAddHobby.setOnClickListener(hobbyListener);
+
+        ImageButton ibAddExperience = (ImageButton) findViewById(R.id.imageButtonExperience);
+        ibAddExperience.setOnClickListener(experienceListener);
 
         recyclerView = findViewById(R.id.rv_study);
         recyclerView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
@@ -216,6 +224,12 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         hobbies = new ArrayList<>();
         hobbyListAdapter = new HobbyListAdapter(hobbies,AddCvActivity.this);
         recyclerHobbyView.setAdapter(hobbyListAdapter);
+
+        recyclerExperienceView = findViewById(R.id.rv_experience);
+        recyclerExperienceView.setLayoutManager(new LinearLayoutManager(AddCvActivity.this));
+        experiences = new ArrayList<>();
+        experienceListAdapter = new ExperienceListAdapter(experiences,AddCvActivity.this);
+        recyclerExperienceView.setAdapter(experienceListAdapter);
     }
 
     private void displayList(){
@@ -224,11 +238,13 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             new RetrieveDrivingLicenseTask(this, cvEntity.getId()).execute();
             new RetrieveLanguageTask(this, cvEntity.getId()).execute();
             new RetrieveHobbyTask(this, cvEntity.getId()).execute();
+            new RetrieveExperienceTask(this, cvEntity.getId()).execute();
         } else {
             new RetrieveTask(this).execute();
             new RetrieveDrivingLicenseTask(this).execute();
             new RetrieveLanguageTask(this).execute();
             new RetrieveHobbyTask(this).execute();
+            new RetrieveExperienceTask(this).execute();
         }
     }
 
@@ -364,6 +380,39 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         }
     }
 
+    private static class RetrieveExperienceTask extends AsyncTask<Void,Void,List<ExperienceEntity>>{
+
+        private WeakReference<AddCvActivity> activityReference;
+        private long cvId;
+
+        RetrieveExperienceTask(AddCvActivity context, long cvId) {
+            activityReference = new WeakReference<>(context);
+            this.cvId = cvId;
+        }
+
+        RetrieveExperienceTask(AddCvActivity context) {
+            activityReference = new WeakReference<>(context);
+            cvId = -1;
+        }
+
+        @Override
+        protected List<ExperienceEntity> doInBackground(Void... voids) {
+            if (activityReference.get() != null && cvId != -1)
+                return activityReference.get().appDatabase.experienceDao().findExperiencesForCv(cvId);
+            else
+                return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<ExperienceEntity> experiences) {
+            if (experiences != null && experiences.size() > 0 ){
+                activityReference.get().experiences.clear();
+                activityReference.get().experiences.addAll(experiences);
+                activityReference.get().experienceListAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
     private void setResult(CvEntity cv, int flag){
         setResult(flag,new Intent().putExtra("cv", cv));
         finish();
@@ -485,6 +534,35 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
     }
 
+    @Override
+    public void onExperienceClick(final int pos) {
+        new AlertDialog.Builder(AddCvActivity.this)
+                .setTitle("Select Options")
+                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i){
+                            case 0:
+                                AddCvActivity.this.pos = pos;
+                                startActivityForResult(
+                                        new Intent(AddCvActivity.this,
+                                                AddExperienceActivity.class).putExtra("experience", experiences.get(pos)),
+                                        500);
+
+                                break;
+                            case 1:
+                                if (experiences.get(pos).getId() > 0) {
+                                    appDatabase.experienceDao().delete(experiences.get(pos));
+                                }
+                                experiences.remove(pos);
+                                listExperienceVisibility();
+                                break;
+                        }
+                    }
+                }).show();
+
+    }
+
     private static class InsertTask extends AsyncTask<Void, Void, Boolean> {
 
         private WeakReference<AddCvActivity> activityReference;
@@ -494,10 +572,12 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         private List<DrivingLicenseEntity> drivingLicenses;
         private List<LanguageEntity> languages;
         private List<HobbyEntity> hobbies;
+        private List<ExperienceEntity> experiences;
 
         InsertTask(AddCvActivity context, CvEntity cvEntity, AddressEntity addressEntity,
                    List<StudyEntity> studies, List<DrivingLicenseEntity> drivingLicenses,
-                   List<LanguageEntity> languages, List<HobbyEntity> hobbies) {
+                   List<LanguageEntity> languages, List<HobbyEntity> hobbies,
+                   List<ExperienceEntity> experiences) {
             activityReference = new WeakReference<>(context);
             this.cvEntity = cvEntity;
             this.addressEntity = addressEntity;
@@ -505,6 +585,7 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             this.drivingLicenses = drivingLicenses;
             this.languages = languages;
             this.hobbies = hobbies;
+            this.experiences = experiences;
         }
 
         @Override
@@ -532,6 +613,11 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             for (HobbyEntity hobbyEntity : hobbies) {
                 hobbyEntity.setCvId(j);
                 activityReference.get().appDatabase.hobbyDao().insert(hobbyEntity);
+            }
+
+            for (ExperienceEntity experienceEntity : experiences) {
+                experienceEntity.setCvId(j);
+                activityReference.get().appDatabase.experienceDao().insert(experienceEntity);
             }
 
             Log.e("ID ", "doInBackground: " + j );
@@ -587,6 +673,16 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
         }
     };
 
+    private View.OnClickListener experienceListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            startActivityForResult(
+                    new Intent(AddCvActivity.this,
+                            AddExperienceActivity.class).putExtra("cv", cvEntity),
+                    500);
+        }
+    };
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 100 && resultCode > 0 ){
@@ -621,6 +717,14 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             }
             listHobbyVisibility();
         }
+        if (requestCode == 500 && resultCode > 0 ){
+            if( resultCode == 1){
+                experiences.add((ExperienceEntity) data.getSerializableExtra("experience"));
+            }else if( resultCode == 2){
+                experiences.set(pos,(ExperienceEntity) data.getSerializableExtra("experience"));
+            }
+            listExperienceVisibility();
+        }
     }
 
     private void listVisibility(){
@@ -637,6 +741,10 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
     private void listHobbyVisibility(){
         hobbyListAdapter.notifyDataSetChanged();
+    }
+
+    private void listExperienceVisibility(){
+        experienceListAdapter.notifyDataSetChanged();
     }
 
     public void onAddressClick(View view) {

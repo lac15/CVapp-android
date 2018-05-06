@@ -36,6 +36,10 @@
             android:name=".ui.AddHobbyActivity"
             android:label="@string/label_add_hobby"
             />
+        <activity
+            android:name=".ui.AddExperienceActivity"
+            android:label="@string/label_add_experience"
+            />
     </application>
 
 </manifest>
