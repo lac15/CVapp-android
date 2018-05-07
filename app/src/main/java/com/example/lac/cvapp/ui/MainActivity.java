@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity implements CvListAdapter.OnC
     @Override
     public void onCvClick(final int pos) {
         new AlertDialog.Builder(MainActivity.this)
-                .setTitle("Select Options")
-                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                .setItems(new String[]{getResources().getString(R.string.text_update),
+                        getResources().getString(R.string.text_delete)}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         switch (i){

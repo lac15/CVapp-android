@@ -33,7 +33,6 @@ import com.example.lac.cvapp.util.DateStringConverter;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static android.view.View.GONE;
@@ -97,9 +96,9 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
         Button button = findViewById(R.id.button);
         if ( (cvEntity = (CvEntity) getIntent().getSerializableExtra("cv")) != null ){
-            getSupportActionBar().setTitle("Update CV");
+            getSupportActionBar().setTitle(getResources().getString(R.string.label_update_cv));
             update = true;
-            button.setText("Update");
+            button.setText(getResources().getString(R.string.button_update));
 
             addressEntity = appDatabase.addressDao().findById(cvEntity.getAddressId());
 
@@ -396,8 +395,8 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
     @Override
     public void onStudyClick(final int pos) {
         new AlertDialog.Builder(AddCvActivity.this)
-                .setTitle("Select Options")
-                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                .setItems(new String[]{getResources().getString(R.string.text_update),
+                        getResources().getString(R.string.text_delete)}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         switch (i){
@@ -425,8 +424,8 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
     @Override
     public void onDrivingLicenseClick(final int pos) {
         new AlertDialog.Builder(AddCvActivity.this)
-                .setTitle("Select Options")
-                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                .setItems(new String[]{getResources().getString(R.string.text_update),
+                        getResources().getString(R.string.text_delete)}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         switch (i){
@@ -454,8 +453,8 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
     @Override
     public void onLanguageClick(final int pos) {
         new AlertDialog.Builder(AddCvActivity.this)
-                .setTitle("Select Options")
-                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                .setItems(new String[]{getResources().getString(R.string.text_update),
+                        getResources().getString(R.string.text_delete)}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         switch (i){
@@ -483,8 +482,8 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
     @Override
     public void onHobbyClick(final int pos) {
         new AlertDialog.Builder(AddCvActivity.this)
-                .setTitle("Select Options")
-                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                .setItems(new String[]{getResources().getString(R.string.text_update),
+                        getResources().getString(R.string.text_delete)}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         switch (i){
@@ -512,8 +511,8 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
     @Override
     public void onExperienceClick(final int pos) {
         new AlertDialog.Builder(AddCvActivity.this)
-                .setTitle("Select Options")
-                .setItems(new String[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
+                .setItems(new String[]{getResources().getString(R.string.text_update),
+                        getResources().getString(R.string.text_delete)}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         switch (i){

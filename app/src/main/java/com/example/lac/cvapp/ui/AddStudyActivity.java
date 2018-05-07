@@ -8,12 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.example.lac.cvapp.R;
 import com.example.lac.cvapp.db.AppDatabase;
 import com.example.lac.cvapp.db.entity.CvEntity;
 import com.example.lac.cvapp.db.entity.StudyEntity;
+import com.example.lac.cvapp.util.DateStringConverter;
 
 import java.lang.ref.WeakReference;
 import java.text.DateFormat;
@@ -25,11 +25,12 @@ public class AddStudyActivity extends AppCompatActivity {
 
     private AppDatabase appDatabase;
 
+    private DateStringConverter dateStringConverter;
+
     private StudyEntity studyEntity;
     private CvEntity cvEntity;
 
-    private TextInputEditText etName, etSchool, etCountry, etCity, etDescription;
-    private EditText etStartDate, etEndDate;
+    private TextInputEditText etName, etSchool, etCountry, etCity, etStartDate, etEndDate, etDescription;
 
     private boolean update;
 
@@ -39,6 +40,8 @@ public class AddStudyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_study);
 
         appDatabase = AppDatabase.getInstance(AddStudyActivity.this);
+
+        dateStringConverter = new DateStringConverter();
 
         etName = findViewById(R.id.et_name);
         etSchool = findViewById(R.id.et_school);
@@ -50,26 +53,15 @@ public class AddStudyActivity extends AppCompatActivity {
 
         Button button = findViewById(R.id.button);
         if ( (studyEntity = (StudyEntity) getIntent().getSerializableExtra("study")) != null ){
-            getSupportActionBar().setTitle("Update study");
+            getSupportActionBar().setTitle(getResources().getString(R.string.label_update_study));
             update = true;
-            button.setText("Update");
+            button.setText(getResources().getString(R.string.button_update));
             etName.setText(studyEntity.getName());
             etSchool.setText(studyEntity.getSchool());
             etCountry.setText(studyEntity.getCountry());
             etCity.setText(studyEntity.getCity());
-
-            DateFormat format = new SimpleDateFormat("yyyy.MM.dd.", Locale.ENGLISH);
-            String startDate = "";
-            String endDate = "";
-            try {
-                startDate =  format.format(studyEntity.getStartDate());
-                endDate =  format.format(studyEntity.getEndDate());
-            } catch (Exception e) {
-                Log.getStackTraceString(e);
-            }
-
-            etStartDate.setText(startDate);
-            etEndDate.setText(endDate);
+            etStartDate.setText(dateStringConverter.dateToString(studyEntity.getStartDate(), "yyyy.MM.dd."));
+            etEndDate.setText(dateStringConverter.dateToString(studyEntity.getEndDate(), "yyyy.MM.dd."));
             etDescription.setText(studyEntity.getDescription());
         }
         button.setOnClickListener(new View.OnClickListener() {
@@ -80,19 +72,8 @@ public class AddStudyActivity extends AppCompatActivity {
                     studyEntity.setSchool(etSchool.getText().toString());
                     studyEntity.setCountry(etCountry.getText().toString());
                     studyEntity.setCity(etCity.getText().toString());
-
-                    DateFormat format = new SimpleDateFormat("yyyy.MM.dd.", Locale.ENGLISH);
-                    Date startDate = new Date();
-                    Date endDate = new Date();
-                    try {
-                        startDate =  format.parse(etStartDate.getText().toString());
-                        endDate =  format.parse(etEndDate.getText().toString());
-                    } catch (Exception e) {
-                        Log.getStackTraceString(e);
-                    }
-
-                    studyEntity.setStartDate(startDate);
-                    studyEntity.setEndDate(endDate);
+                    studyEntity.setStartDate(dateStringConverter.stringToDate(etStartDate.getText().toString(), "yyyy.MM.dd."));
+                    studyEntity.setEndDate(dateStringConverter.stringToDate(etEndDate.getText().toString(), "yyyy.MM.dd."));
                     studyEntity.setDescription(etDescription.getText().toString());
 
                     if (studyEntity.getId() > 0) {
@@ -101,19 +82,11 @@ public class AddStudyActivity extends AppCompatActivity {
 
                     setResult(studyEntity, 2);
                 } else {
-                    DateFormat format = new SimpleDateFormat("yyyy.MM.dd.", Locale.ENGLISH);
-                    Date startDate = new Date();
-                    Date endDate = new Date();
-                    try {
-                        startDate =  format.parse(etStartDate.getText().toString());
-                        endDate =  format.parse(etEndDate.getText().toString());
-                    } catch (Exception e) {
-                        Log.getStackTraceString(e);
-                    }
-
                     studyEntity = new StudyEntity(etName.getText().toString(), etSchool.getText().toString(),
                             etCountry.getText().toString(), etCity.getText().toString(),
-                            startDate, endDate, etDescription.getText().toString());
+                            dateStringConverter.stringToDate(etStartDate.getText().toString(), "yyyy.MM.dd."),
+                            dateStringConverter.stringToDate(etEndDate.getText().toString(), "yyyy.MM.dd."),
+                            etDescription.getText().toString());
 
                     if ( (cvEntity = (CvEntity) getIntent().getSerializableExtra("cv")) != null
                             && (cvEntity.getId() > 0) ){

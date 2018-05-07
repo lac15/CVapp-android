@@ -8,28 +8,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.example.lac.cvapp.R;
 import com.example.lac.cvapp.db.AppDatabase;
 import com.example.lac.cvapp.db.entity.CvEntity;
 import com.example.lac.cvapp.db.entity.ExperienceEntity;
+import com.example.lac.cvapp.util.DateStringConverter;
 
 import java.lang.ref.WeakReference;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class AddExperienceActivity extends AppCompatActivity {
 
     private AppDatabase appDatabase;
 
+    private DateStringConverter dateStringConverter;
+
     private ExperienceEntity experienceEntity;
     private CvEntity cvEntity;
 
-    private TextInputEditText etPosition, etCompany, etCountry, etCity;
-    private EditText etStartDate, etEndDate;
+    private TextInputEditText etPosition, etCompany, etCountry, etCity, etStartDate, etEndDate;
 
     private boolean update;
 
@@ -40,6 +37,8 @@ public class AddExperienceActivity extends AppCompatActivity {
 
         appDatabase = AppDatabase.getInstance(AddExperienceActivity.this);
 
+        dateStringConverter = new DateStringConverter();
+
         etPosition = findViewById(R.id.et_position);
         etCompany = findViewById(R.id.et_company);
         etCountry = findViewById(R.id.et_country);
@@ -49,26 +48,15 @@ public class AddExperienceActivity extends AppCompatActivity {
 
         Button button = findViewById(R.id.button);
         if ( (experienceEntity = (ExperienceEntity) getIntent().getSerializableExtra("experience")) != null ){
-            getSupportActionBar().setTitle("Update experience");
+            getSupportActionBar().setTitle(getResources().getString(R.string.label_update_experience));
             update = true;
-            button.setText("Update");
+            button.setText(getResources().getString(R.string.button_update));
             etPosition.setText(experienceEntity.getPosition());
             etCompany.setText(experienceEntity.getCompany());
             etCountry.setText(experienceEntity.getCountry());
             etCity.setText(experienceEntity.getCity());
-
-            DateFormat format = new SimpleDateFormat("yyyy.MM.dd.", Locale.ENGLISH);
-            String startDate = "";
-            String endDate = "";
-            try {
-                startDate =  format.format(experienceEntity.getStartDate());
-                endDate =  format.format(experienceEntity.getEndDate());
-            } catch (Exception e) {
-                Log.getStackTraceString(e);
-            }
-
-            etStartDate.setText(startDate);
-            etEndDate.setText(endDate);
+            etStartDate.setText(dateStringConverter.dateToString(experienceEntity.getStartDate(), "yyyy.MM.dd."));
+            etEndDate.setText(dateStringConverter.dateToString(experienceEntity.getEndDate(), "yyyy.MM.dd."));
         }
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,19 +66,8 @@ public class AddExperienceActivity extends AppCompatActivity {
                     experienceEntity.setCompany(etCompany.getText().toString());
                     experienceEntity.setCountry(etCountry.getText().toString());
                     experienceEntity.setCity(etCity.getText().toString());
-
-                    DateFormat format = new SimpleDateFormat("yyyy.MM.dd.", Locale.ENGLISH);
-                    Date startDate = new Date();
-                    Date endDate = new Date();
-                    try {
-                        startDate =  format.parse(etStartDate.getText().toString());
-                        endDate =  format.parse(etEndDate.getText().toString());
-                    } catch (Exception e) {
-                        Log.getStackTraceString(e);
-                    }
-
-                    experienceEntity.setStartDate(startDate);
-                    experienceEntity.setEndDate(endDate);
+                    experienceEntity.setStartDate(dateStringConverter.stringToDate(etStartDate.getText().toString(), "yyyy.MM.dd."));
+                    experienceEntity.setEndDate(dateStringConverter.stringToDate(etEndDate.getText().toString(), "yyyy.MM.dd."));
 
                     if (experienceEntity.getId() > 0) {
                         appDatabase.experienceDao().update(experienceEntity);
@@ -98,19 +75,10 @@ public class AddExperienceActivity extends AppCompatActivity {
 
                     setResult(experienceEntity, 2);
                 } else {
-                    DateFormat format = new SimpleDateFormat("yyyy.MM.dd.", Locale.ENGLISH);
-                    Date startDate = new Date();
-                    Date endDate = new Date();
-                    try {
-                        startDate =  format.parse(etStartDate.getText().toString());
-                        endDate =  format.parse(etEndDate.getText().toString());
-                    } catch (Exception e) {
-                        Log.getStackTraceString(e);
-                    }
-
                     experienceEntity = new ExperienceEntity(etPosition.getText().toString(), etCompany.getText().toString(),
                             etCountry.getText().toString(), etCity.getText().toString(),
-                            startDate, endDate);
+                            dateStringConverter.stringToDate(etStartDate.getText().toString(), "yyyy.MM.dd."),
+                            dateStringConverter.stringToDate(etEndDate.getText().toString(), "yyyy.MM.dd."));
 
                     if ( (cvEntity = (CvEntity) getIntent().getSerializableExtra("cv")) != null
                             && (cvEntity.getId() > 0) ){

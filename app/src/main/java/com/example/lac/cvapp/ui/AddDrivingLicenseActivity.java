@@ -38,9 +38,9 @@ public class AddDrivingLicenseActivity extends AppCompatActivity {
 
         Button button = findViewById(R.id.button);
         if ( (drivingLicenseEntity = (DrivingLicenseEntity) getIntent().getSerializableExtra("driving_license")) != null ){
-            getSupportActionBar().setTitle("Update driving license");
+            getSupportActionBar().setTitle(getResources().getString(R.string.label_update_driving_license));
             update = true;
-            button.setText("Update");
+            button.setText(getResources().getString(R.string.button_update));
             etType.setText(drivingLicenseEntity.getType());
         }
         button.setOnClickListener(new View.OnClickListener() {

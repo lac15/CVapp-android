@@ -25,7 +25,7 @@
                     android:id="@+id/et_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Nyelv" />
+                    android:hint="@string/text_language_name" />
             </android.support.design.widget.TextInputLayout>
 
             <Button
