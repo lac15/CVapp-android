@@ -100,7 +100,7 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
             update = true;
             button.setText("Update");
 
-            AddressEntity updateAddressEntity = appDatabase.addressDao().findById(cvEntity.getId());
+            AddressEntity updateAddressEntity = appDatabase.addressDao().findById(cvEntity.getAddressId());
 
             etFirstName.setText(cvEntity.getFirstName());
             etLastName.setText(cvEntity.getLastName());
