@@ -29,15 +29,12 @@ import com.example.lac.cvapp.db.entity.ExperienceEntity;
 import com.example.lac.cvapp.db.entity.HobbyEntity;
 import com.example.lac.cvapp.db.entity.LanguageEntity;
 import com.example.lac.cvapp.db.entity.StudyEntity;
-import com.example.lac.cvapp.util.DateRoomConverter;
+import com.example.lac.cvapp.util.DateStringConverter;
 
 import java.lang.ref.WeakReference;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -63,6 +60,8 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
     private RecyclerView recyclerExperienceView;
     private ExperienceListAdapter experienceListAdapter;
     private List<ExperienceEntity> experiences;
+
+    private DateStringConverter dateStringConverter;
 
     private CvEntity cvEntity;
     private AddressEntity addressEntity;
@@ -94,35 +93,28 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
         appDatabase = AppDatabase.getInstance(AddCvActivity.this);
 
+        dateStringConverter = new DateStringConverter();
+
         Button button = findViewById(R.id.button);
         if ( (cvEntity = (CvEntity) getIntent().getSerializableExtra("cv")) != null ){
             getSupportActionBar().setTitle("Update CV");
             update = true;
             button.setText("Update");
 
-            AddressEntity updateAddressEntity = appDatabase.addressDao().findById(cvEntity.getAddressId());
+            addressEntity = appDatabase.addressDao().findById(cvEntity.getAddressId());
 
             etFirstName.setText(cvEntity.getFirstName());
             etLastName.setText(cvEntity.getLastName());
-            etCountry.setText(updateAddressEntity.getCountry());
-            etZipCode.setText(updateAddressEntity.getZipCode());
-            etState.setText(updateAddressEntity.getState());
-            etCity.setText(updateAddressEntity.getCity());
-            etStreet.setText(updateAddressEntity.getStreet());
-            etHouseNumber.setText(updateAddressEntity.getHouseNumber());
+            etCountry.setText(addressEntity.getCountry());
+            etZipCode.setText(addressEntity.getZipCode());
+            etState.setText(addressEntity.getState());
+            etCity.setText(addressEntity.getCity());
+            etStreet.setText(addressEntity.getStreet());
+            etHouseNumber.setText(addressEntity.getHouseNumber());
             etPhoneNumber.setText(cvEntity.getPhoneNumber());
             etEmailAddress.setText(cvEntity.getEmailAddress());
             etGender.setText(cvEntity.getGender());
-
-            DateFormat format = new SimpleDateFormat("yyyy.MM.dd.", Locale.ENGLISH);
-            String birthDate = "";
-            try {
-                birthDate =  format.format(cvEntity.getBirthDate());
-            } catch (Exception e) {
-                Log.getStackTraceString(e);
-            }
-
-            etBirthDate.setText(birthDate);
+            etBirthDate.setText(dateStringConverter.dateToString(cvEntity.getBirthDate(), "yyyy.MM.dd."));
             etNationality.setText(cvEntity.getNationality());
             etNativeLanguage.setText(cvEntity.getNativeLanguage());
         }
@@ -135,16 +127,7 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
                     cvEntity.setPhoneNumber(etPhoneNumber.getText().toString());
                     cvEntity.setEmailAddress(etEmailAddress.getText().toString());
                     cvEntity.setGender(etGender.getText().toString());
-
-                    DateFormat format = new SimpleDateFormat("yyyy.MM.dd.", Locale.ENGLISH);
-                    Date birthDate = new Date();
-                    try {
-                        birthDate =  format.parse(etBirthDate.getText().toString());
-                    } catch (Exception e) {
-                        Log.getStackTraceString(e);
-                    }
-
-                    cvEntity.setBirthDate(birthDate);
+                    cvEntity.setBirthDate(dateStringConverter.stringToDate(etBirthDate.getText().toString(), "yyyy.MM.dd."));
                     cvEntity.setNationality(etNationality.getText().toString());
                     cvEntity.setNativeLanguage(etNativeLanguage.getText().toString());
 
@@ -163,17 +146,9 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
                             etState.getText().toString(), etCity.getText().toString(),
                             etStreet.getText().toString(), etHouseNumber.getText().toString());
 
-                    DateFormat format = new SimpleDateFormat("yyyy.MM.dd.", Locale.ENGLISH);
-                    Date birthDate = new Date();
-                    try {
-                        birthDate =  format.parse(etBirthDate.getText().toString());
-                    } catch (Exception e) {
-                        Log.getStackTraceString(e);
-                    }
-
                     cvEntity = new CvEntity(etFirstName.getText().toString(), etLastName.getText().toString(),
-                            etPhoneNumber.getText().toString(), etEmailAddress.getText().toString(),
-                            etGender.getText().toString(), birthDate,
+                            etPhoneNumber.getText().toString(), etEmailAddress.getText().toString(), etGender.getText().toString(),
+                            dateStringConverter.stringToDate(etBirthDate.getText().toString(), "yyyy.MM.dd."),
                             etNationality.getText().toString(), etNativeLanguage.getText().toString());
                     new InsertTask(AddCvActivity.this, cvEntity, addressEntity, studies,
                             drivingLicenses, languages, hobbies, experiences).execute();
