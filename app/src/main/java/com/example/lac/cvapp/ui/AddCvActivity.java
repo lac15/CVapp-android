@@ -96,7 +96,6 @@ public class AddCvActivity extends AppCompatActivity implements StudyListAdapter
 
         Button button = findViewById(R.id.button);
         if ( (cvEntity = (CvEntity) getIntent().getSerializableExtra("cv")) != null ){
-            getSupportActionBar().setTitle(getResources().getString(R.string.label_update_cv));
             update = true;
             button.setText(getResources().getString(R.string.button_update));
 

@@ -48,4 +48,5 @@
     <string name="text_study_name">Study name</string>
     <string name="text_school">School</string>
     <string name="text_description">Description</string>
+    <string name="text_search">Search</string>
 </resources>

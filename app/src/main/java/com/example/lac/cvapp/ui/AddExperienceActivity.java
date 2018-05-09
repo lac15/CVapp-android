@@ -48,7 +48,6 @@ public class AddExperienceActivity extends AppCompatActivity {
 
         Button button = findViewById(R.id.button);
         if ( (experienceEntity = (ExperienceEntity) getIntent().getSerializableExtra("experience")) != null ){
-            getSupportActionBar().setTitle(getResources().getString(R.string.label_update_experience));
             update = true;
             button.setText(getResources().getString(R.string.button_update));
             etPosition.setText(experienceEntity.getPosition());

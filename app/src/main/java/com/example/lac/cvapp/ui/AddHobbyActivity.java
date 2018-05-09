@@ -38,7 +38,6 @@ public class AddHobbyActivity extends AppCompatActivity {
 
         Button button = findViewById(R.id.button);
         if ( (hobbyEntity = (HobbyEntity) getIntent().getSerializableExtra("hobby")) != null ){
-            getSupportActionBar().setTitle(getResources().getString(R.string.label_update_hobby));
             update = true;
             button.setText(getResources().getString(R.string.button_update));
             etName.setText(hobbyEntity.getName());

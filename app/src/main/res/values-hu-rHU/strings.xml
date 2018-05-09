@@ -49,4 +49,5 @@
     <string name="text_study_name">Szak</string>
     <string name="text_school">Iskola</string>
     <string name="text_description">Leírás</string>
+    <string name="text_search">Keresés</string>
 </resources>

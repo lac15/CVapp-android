@@ -38,7 +38,6 @@ public class AddLanguageActivity extends AppCompatActivity {
 
         Button button = findViewById(R.id.button);
         if ( (languageEntity = (LanguageEntity) getIntent().getSerializableExtra("language")) != null ){
-            getSupportActionBar().setTitle(getResources().getString(R.string.label_update_language));
             update = true;
             button.setText(getResources().getString(R.string.button_update));
             etName.setText(languageEntity.getName());

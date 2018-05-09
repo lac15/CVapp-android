@@ -53,7 +53,6 @@ public class AddStudyActivity extends AppCompatActivity {
 
         Button button = findViewById(R.id.button);
         if ( (studyEntity = (StudyEntity) getIntent().getSerializableExtra("study")) != null ){
-            getSupportActionBar().setTitle(getResources().getString(R.string.label_update_study));
             update = true;
             button.setText(getResources().getString(R.string.button_update));
             etName.setText(studyEntity.getName());

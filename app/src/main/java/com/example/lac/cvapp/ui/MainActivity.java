@@ -9,8 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import com.example.lac.cvapp.R;
 import com.example.lac.cvapp.db.AppDatabase;
@@ -26,9 +29,11 @@ public class MainActivity extends AppCompatActivity implements CvListAdapter.OnC
     /*private TextView textViewMsg;*/
     private AppDatabase appDatabase;
 
+    private SearchView searchView;
     private RecyclerView recyclerView;
     private CvListAdapter cvListAdapter;
     private List<CvEntity> cvs;
+    private List<CvEntity> queriedCvs;
 
     private int pos;
 
@@ -42,11 +47,13 @@ public class MainActivity extends AppCompatActivity implements CvListAdapter.OnC
     }
 
     private void initializeViews(){
-        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        textViewMsg =  (TextView) findViewById(R.id.tv__empty);*/
+        /*textViewMsg =  (TextView) findViewById(R.id.tv__empty);*/
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(listener);
+
+        queriedCvs = new ArrayList<>();
 
         recyclerView = findViewById(R.id.rv_cv);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
@@ -142,6 +149,51 @@ public class MainActivity extends AppCompatActivity implements CvListAdapter.OnC
         textViewMsg.setVisibility(emptyMsgVisibility);*/
         cvListAdapter.notifyDataSetChanged();
     }
+
+    /*@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) myActionMenuItem.getActionView();
+        searchView.setOnQueryTextListener(onQueryTextListener);
+
+        return true;
+    }
+
+    private SearchView.OnQueryTextListener onQueryTextListener =
+            new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    getCvsFromDb(query);
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    if ("".equals(newText)) {
+                        cvs.clear();
+                        cvs.addAll(appDatabase.cvDao().getAll());
+                        listVisibility();
+                    }
+                    return false;
+                }
+
+                private void getCvsFromDb(String searchText) {
+                    if ("".equals(searchText)) {
+                        cvs.clear();
+                        cvs.addAll(appDatabase.cvDao().getAll());
+                    } else {
+                        searchText = "%" + searchText + "%";
+
+                        queriedCvs = appDatabase.cvDao().searchByQuery(searchText);
+
+                        cvs.clear();
+                        cvs.addAll(queriedCvs);
+                    }
+                    listVisibility();
+                }
+            };*/
 
     @Override
     protected void onDestroy() {
